@@ -1,51 +1,71 @@
 import logo from './logo.svg';
 import './App.css';
+import { useState } from 'react';
 
-function Title(props){
+function Header(props) {
     return <header>
-        <h1><a href="/" onClick={function(event){
+        <h1><a href="/" onClick={function (event) {
             event.preventDefault();
-            props.onChangeMode(props.title);
+            props.onChangeMode();
         }}>{props.title}</a></h1>
     </header>
 }
-function Nav(props){
+
+function Nav(props) {
     const lis = []
-    let i=-1
-    while(i++<pros.topics.length-1){
-        lis.push(<li><a href={"/read/"+pros.topics[i].id} onClick={function(event){
+    let i = -1
+    while (++i < props.topics.length) {
+        let t = props.topics[i];
+        lis.push(<li><a id={t.id} href={"/read/" + props.topics[i].id} onClick={function (event) {
             event.preventDefault();
-            props.onChangeMode(props.topics[i].id);
-        }}>{pros.topics[i].title}</a></li>)
+            props.onChangeMode(Number(event.target.id));
+        }}>{props.topics[i].title}</a></li>)
     }
-    return  <nav>
+    return <nav>
         <ol>
             {lis}
         </ol>
     </nav>
 }
-function Article(props){
+
+function Article(props) {
     return <article>
         <h2>{props.title}</h2>
         {props.body}
     </article>
 }
-function Test(){
+
+function App() {
+    const [mode, setMode] = useState("WELCOME");
+    const [id, setId] = useState(null);
     const topics = [
-        {id:1, title:"html", body:"html is ..."},
-        {id:2, title:"css", body:"css is ..."},
-        {id:3, title:"javascript", body:"javacript is ..."}
+        { id: 1, title: "html", body: "html is ..." },
+        { id: 2, title: "css", body: "css is ..." },
+        { id: 3, title: "javascript", body: "javacript is ..." }
     ]
+
+    let content = null;
+    if (mode === "WELCOME") {
+        content = <Article title="Welcome" body="Hello, WEB"></Article>;
+    } else if (mode === "HTMLLAN") {
+        let i = -1;
+        while (++i < topics.length) {
+            if (topics[i].id === id) {
+                content = <Article title={topics[i].title} body={topics[i].body}></Article>;
+            }
+        }
+    }
 
     return (
         <div>
-            <Header title="WEB" onChangeMode={function(target){
-                alert(target);
+            <Header title="WEB" onChangeMode={function () {
+                setMode("WELCOME");
             }}></Header>
-            <Nav topics={topics} onChangeMode={function(key){
-                alert(key);
+            <Nav topics={topics} onChangeMode={function (_id) {
+                setMode("HTMLLAN");
+                setId(_id);
             }}></Nav>
-            <Article title="Welcome" body="Hello, WEB"></Article>
+            {content}
         </div>
     );
 }
